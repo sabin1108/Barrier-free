@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Settings } from "lucide-react"
 import Link from "next/link"
+import { ModeToggle } from "@/components/mode-toggle"
 
 export function PortfolioHeader() {
   return (
@@ -20,12 +21,15 @@ export function PortfolioHeader() {
             <Link href="#" className="hover:text-foreground transition-colors">Contact</Link>
           </nav>
 
-          <Button variant="ghost" size="sm" asChild className="rounded-full hover:bg-primary/5">
-            <Link href="/admin">
-              <Settings className="w-4 h-4 mr-2" />
-              Manage
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <ModeToggle />
+            <Button variant="ghost" size="sm" asChild className="rounded-full hover:bg-primary/5">
+              <Link href="/admin">
+                <Settings className="w-4 h-4 mr-2" />
+                Manage
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
     </header>

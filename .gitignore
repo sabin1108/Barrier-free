@@ -23,7 +23,7 @@ yarn-error.log*
 .vercel
 
 # agent
-.agent/
+.agent
 
 # typescript
 *.tsbuildinfo
