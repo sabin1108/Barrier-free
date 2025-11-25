@@ -1,4 +1,9 @@
 import { generateText } from "ai"
+import { createOpenAI } from "@ai-sdk/openai"
+
+const openai = createOpenAI({
+  apiKey: process.env.PUBLIC_API_KEY,
+})
 
 export async function POST(request: Request) {
   try {
@@ -12,7 +17,7 @@ export async function POST(request: Request) {
     const existingText = existingDescription ? `\n\n현재 설명: ${existingDescription}` : ""
 
     const { text } = await generateText({
-      model: "openai/gpt-4o-mini",
+      model: openai("gpt-4o-mini"),
       prompt: `프로젝트 제목: ${title}
 ${tagsText}${existingText}
 
@@ -27,7 +32,7 @@ ${tagsText}${existingText}
 
     return Response.json({ description: text })
   } catch (error) {
-    console.error("[v0] Error generating description:", error)
+    console.error("Error generating description:", error)
     return Response.json({ error: "Failed to generate description" }, { status: 500 })
   }
 }

@@ -33,12 +33,15 @@ export function PortfolioContent({ projects }: { projects: Project[] }) {
     <div className="min-h-screen bg-background">
       <PortfolioHeader />
 
-      <main className="container mx-auto px-4 py-8 sm:py-12">
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-8 sm:mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-3 text-balance">Projects & Work</h2>
-            <p className="text-muted-foreground text-base sm:text-lg text-pretty leading-relaxed">
-              A collection of my professional projects, experiments, and open-source contributions
+      <main className="container mx-auto px-4 py-24 sm:py-32">
+        <div className="max-w-5xl mx-auto">
+          <div className="mb-16 sm:mb-24 text-center space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <h2 className="text-4xl sm:text-6xl font-bold tracking-tight text-balance bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+              Building digital experiences that matter.
+            </h2>
+            <p className="text-muted-foreground text-lg sm:text-xl max-w-2xl mx-auto text-pretty leading-relaxed">
+              A collection of my professional projects, experiments, and open-source contributions.
+              Crafted with attention to detail and user experience.
             </p>
           </div>
 
@@ -50,9 +53,12 @@ export function PortfolioContent({ projects }: { projects: Project[] }) {
           />
 
           {featuredProjects.length > 0 && (
-            <section className="mb-8 sm:mb-12">
-              <h3 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">Featured Projects</h3>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <section className="mb-16 sm:mb-24 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 fill-mode-backwards">
+              <div className="flex items-center gap-3 mb-6 sm:mb-8">
+                <h3 className="text-2xl sm:text-3xl font-bold tracking-tight">Featured Projects</h3>
+                <div className="h-px flex-1 bg-border/60"></div>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                 {featuredProjects.map((project) => (
                   <ProjectCard key={project.id} project={project} />
                 ))}

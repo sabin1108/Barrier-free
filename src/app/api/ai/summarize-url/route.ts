@@ -1,5 +1,10 @@
 import { generateText } from "ai";
+import { createOpenAI } from "@ai-sdk/openai";
 import { JSDOM } from "jsdom";
+
+const openai = createOpenAI({
+  apiKey: process.env.PUBLIC_API_KEY,
+});
 
 export async function POST(request: Request) {
   try {
@@ -12,13 +17,13 @@ export async function POST(request: Request) {
     const response = await fetch(url);
     const html = await response.text();
     const dom = new JSDOM(html);
-    const reader = new dom.window.DOMParser();
-    const doc = reader.parseFromString(dom.window.document.body.textContent || "", "text/html");
-    const mainContent = doc.body.textContent || "";
-
+    const mainContent = (dom.window.document.body.textContent || "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 10000); // Limit content length
 
     const { text } = await generateText({
-      model: "openai/gpt-4o-mini",
+      model: openai("gpt-4o-mini"),
       prompt: `다음 텍스트를 요약해주세요:
 
 ${mainContent}
@@ -28,7 +33,7 @@ ${mainContent}
 
     return Response.json({ summary: text });
   } catch (error) {
-    console.error("[v0] Error summarizing url:", error);
+    console.error("Error summarizing url:", error);
     return Response.json({ error: "Failed to summarize url" }, { status: 500 });
   }
 }

@@ -1,6 +1,7 @@
 "use server"
 
-import { sql, type Project } from "./db"
+import { sql } from "./db"
+import type { DBProject as Project } from "./types"
 import { getCurrentUser } from "./auth-db"
 import { revalidatePath } from "next/cache"
 

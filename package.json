@@ -7,10 +7,11 @@
     "dev": "next dev",
     "lint": "eslint .",
     "start": "next start",
-    "db:push": "drizzle-kit push",  
+    "db:push": "drizzle-kit push",
     "db:seed": "drizzle-kit seed"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^2.0.72",
     "@hookform/resolvers": "^3.10.0",
     "@neondatabase/serverless": "latest",
     "@radix-ui/react-accordion": "1.2.2",
@@ -61,6 +62,7 @@
     "react-resizable-panels": "^2.1.7",
     "recharts": "2.15.4",
     "sonner": "^1.7.4",
+    "styled-jsx": "^5.1.7",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.9",

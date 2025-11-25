@@ -36,7 +36,7 @@ export async function signUp(email: string, password: string, name: string) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 12, // 12 hours
     })
 
     return { success: true }
@@ -79,7 +79,7 @@ export async function signIn(email: string, password: string) {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
-        maxAge: 60 * 60 * 24 * 7, // 7 days
+        maxAge: 60 * 60 * 12, // 12 hours
       },
     )
 

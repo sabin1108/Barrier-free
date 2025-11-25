@@ -23,18 +23,22 @@ export function PortfolioFilter({ allTags, selectedTags, onTagToggle, onClearAll
         )}
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2.5">
         {allTags.map((tag) => {
           const isSelected = selectedTags.includes(tag)
           return (
-            <Badge
+            <button
               key={tag}
-              variant={isSelected ? "default" : "outline"}
-              className="cursor-pointer transition-all hover:scale-105"
               onClick={() => onTagToggle(tag)}
+              className={`
+                px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300
+                ${isSelected
+                  ? "bg-primary text-primary-foreground shadow-md hover:bg-primary/90 hover:scale-105"
+                  : "bg-secondary/50 text-secondary-foreground hover:bg-secondary hover:scale-105 border border-transparent"}
+              `}
             >
               {tag}
-            </Badge>
+            </button>
           )
         })}
       </div>

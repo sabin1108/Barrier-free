@@ -6,11 +6,11 @@ require('dotenv').config({ path: './.env.local' }); // .env.local 파일 경로 
 import { defineConfig } from 'drizzle-kit';
 
 if (!process.env.NEXT_PUBLIC_NEON_DATABASE_URL) {
-    throw new Error('NEON_DATABASE_URL is missing in environment.');
+  throw new Error('NEON_DATABASE_URL is missing in environment.');
 }
 
 export default defineConfig({
-  schema: "./lib/schema.ts", 
+  schema: "./src/lib/schema.ts",
   out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {
