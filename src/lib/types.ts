@@ -13,6 +13,15 @@ export interface DBProject {
   updated_at: Date
 }
 
+export interface DBProfile {
+  id: string
+  user_id: string
+  headline: string
+  bio: string
+  created_at: Date
+  updated_at: Date
+}
+
 export interface User {
   id: string
   email: string
@@ -31,6 +40,12 @@ export interface Project {
   tags: string[]
   createdAt: string
   featured: boolean
+}
+
+export interface Profile {
+  id: string
+  headline: string
+  bio: string
 }
 
 export interface ProjectFormData {

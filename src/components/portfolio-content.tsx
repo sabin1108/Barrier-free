@@ -6,7 +6,7 @@ import { PortfolioHeader } from "@/components/portfolio-header"
 import { PortfolioFilter } from "@/components/portfolio-filter"
 import type { Project } from "@/lib/types"
 
-export function PortfolioContent({ projects }: { projects: Project[] }) {
+export function PortfolioContent({ projects, profile }: { projects: Project[], profile?: { headline: string, bio: string } | null }) {
   const [selectedTags, setSelectedTags] = useState<string[]>([])
 
   const allTags = useMemo(() => {
@@ -37,11 +37,10 @@ export function PortfolioContent({ projects }: { projects: Project[] }) {
         <div className="max-w-5xl mx-auto">
           <div className="mb-16 sm:mb-24 text-center space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <h2 className="text-4xl sm:text-6xl font-bold tracking-tight text-balance bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
-              Building digital experiences that matter.
+              {profile?.headline || "Building digital experiences that matter."}
             </h2>
             <p className="text-muted-foreground text-lg sm:text-xl max-w-2xl mx-auto text-pretty leading-relaxed">
-              A collection of my professional projects, experiments, and open-source contributions.
-              Crafted with attention to detail and user experience.
+              {profile?.bio || "A collection of my professional projects, experiments, and open-source contributions. Crafted with attention to detail and user experience."}
             </p>
           </div>
 

@@ -1,4 +1,5 @@
 import { getProjects } from "@/lib/projects-db"
+import { getProfile } from "@/lib/profile-actions"
 import { PortfolioContent } from "@/components/portfolio-content"
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth-db"
@@ -13,16 +14,19 @@ export default async function HomePage() {
             redirect('/login')
         }
 
-        // 3. 로그인 된 경우 프로젝트 데이터 로드
-        const projects = await getProjects()
+        // 3. 로그인 된 경우 프로젝트 및 프로필 데이터 로드
+        const [projects, profile] = await Promise.all([
+            getProjects(),
+            getProfile()
+        ])
 
         // 데이터 유효성 검사
         if (!Array.isArray(projects)) {
             console.error('Projects data is not an array:', projects)
-            return <PortfolioContent projects={[]} />
+            return <PortfolioContent projects={[]} profile={profile} />
         }
 
-        return <PortfolioContent projects={projects} />
+        return <PortfolioContent projects={projects} profile={profile} />
     } catch (error) {
         // redirect() 함수는 내부적으로 에러를 던지므로 다시 던져줘야 함
         if (error.message === 'NEXT_REDIRECT') {

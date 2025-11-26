@@ -1,11 +1,11 @@
 "use server"
 
 import { sql } from "./db"
-import type { DBProject as Project } from "./types"
+import type { DBProject, Project } from "./types"
 import { getCurrentUser } from "./auth-db"
 import { revalidatePath } from "next/cache"
 
-export async function createProject(data: Omit<Project, "id" | "created_at" | "updated_at" | "user_id">) {
+export async function createProject(data: Omit<DBProject, "id" | "created_at" | "updated_at" | "user_id">) {
   try {
     const user = await getCurrentUser()
     if (!user) {
@@ -42,7 +42,7 @@ export async function createProject(data: Omit<Project, "id" | "created_at" | "u
 
 export async function updateProject(
   id: string,
-  data: Partial<Omit<Project, "id" | "created_at" | "updated_at" | "user_id">>,
+  data: Partial<Omit<DBProject, "id" | "created_at" | "updated_at" | "user_id">>,
 ) {
   try {
     const user = await getCurrentUser()
@@ -120,5 +120,45 @@ export async function deleteProject(id: string) {
   } catch (error) {
     console.error("Delete project error:", error)
     return { success: false, error: "Failed to delete project" }
+  }
+}
+
+export async function getProject(id: string): Promise<Project | null> {
+  try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return null
+    }
+
+    const projects = (await sql`
+      SELECT * FROM projects WHERE id = ${id}
+    `) as DBProject[]
+
+    if (projects.length === 0) {
+      return null
+    }
+
+    const dbProject = projects[0]
+
+    // Check ownership
+    if (dbProject.user_id !== user.userId) {
+      return null
+    }
+
+    // Map DBProject to Project (frontend type)
+    return {
+      id: dbProject.id,
+      title: dbProject.title,
+      description: dbProject.description,
+      imageUrl: dbProject.image_url || "",
+      githubUrl: dbProject.github_url || undefined,
+      liveUrl: dbProject.live_url || undefined,
+      tags: dbProject.tags,
+      featured: dbProject.featured,
+      createdAt: dbProject.created_at.toISOString(),
+    }
+  } catch (error) {
+    console.error("Get project error:", error)
+    return null
   }
 }

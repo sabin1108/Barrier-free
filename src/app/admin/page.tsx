@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { AdminProjectCard } from "@/components/admin-project-card"
-import { ProjectForm } from "@/components/project-form"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,24 +13,20 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { Plus, ArrowLeft, Sparkles, LogOut } from "lucide-react"
+import { Plus, ArrowLeft, Sparkles, LogOut, User } from "lucide-react"
 import Link from "next/link"
 import { getProjectsByUser } from "@/lib/projects-db"
 import {
-  createProject,
-  updateProject as updateProjectDb,
   deleteProject as deleteProjectDb,
 } from "@/lib/projects-actions"
 import { getCurrentUser, signOut } from "@/lib/auth-db"
-import type { Project, ProjectFormData } from "@/lib/types"
+import type { Project } from "@/lib/types"
 import { useRouter } from "next/navigation"
 
 export default function AdminPage() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [projects, setProjects] = useState<Project[]>([])
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
-  const [editingProject, setEditingProject] = useState<Project | null>(null)
   const [deletingProject, setDeletingProject] = useState<Project | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -57,44 +51,6 @@ export default function AdminPage() {
     await signOut()
     router.push("/")
     router.refresh()
-  }
-
-  const handleAddProject = async (data: ProjectFormData) => {
-    const createData = {
-      title: data.title,
-      description: data.description,
-      image_url: data.imageUrl,
-      github_url: data.githubUrl,
-      live_url: data.liveUrl,
-      tags: data.tags,
-      featured: data.featured,
-    }
-    const result = await createProject(createData)
-    if (result.success) {
-      const userProjects = await getProjectsByUser(user.userId)
-      setProjects(userProjects)
-      setIsAddDialogOpen(false)
-    }
-  }
-
-  const handleUpdateProject = async (data: ProjectFormData) => {
-    if (editingProject) {
-      const updateData = {
-        title: data.title,
-        description: data.description,
-        image_url: data.imageUrl,
-        github_url: data.githubUrl,
-        live_url: data.liveUrl,
-        tags: data.tags,
-        featured: data.featured,
-      }
-      const result = await updateProjectDb(editingProject.id, updateData)
-      if (result.success) {
-        const userProjects = await getProjectsByUser(user.userId)
-        setProjects(userProjects)
-        setEditingProject(null)
-      }
-    }
   }
 
   const handleDeleteProject = async () => {
@@ -140,10 +96,12 @@ export default function AdminPage() {
             </div>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Button onClick={() => setIsAddDialogOpen(true)} className="flex-1 sm:flex-none">
-                <Plus className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Add Project</span>
-                <span className="sm:hidden">Add</span>
+              <Button asChild className="flex-1 sm:flex-none">
+                <Link href="/admin/new">
+                  <Plus className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">Add Project</span>
+                  <span className="sm:hidden">Add</span>
+                </Link>
               </Button>
               <Button variant="outline" size="icon" onClick={handleLogout} title="Logout">
                 <LogOut className="w-4 h-4" />
@@ -163,20 +121,30 @@ export default function AdminPage() {
               </p>
             </div>
 
-            <Button variant="outline" asChild className="w-full sm:w-auto bg-transparent">
-              <Link href="/admin/ai-assistant">
-                <Sparkles className="w-4 h-4 mr-2" />
-                AI Assistant
-              </Link>
-            </Button>
+            <div className="flex gap-2 w-full sm:w-auto">
+              <Button variant="outline" asChild className="flex-1 sm:flex-none bg-transparent">
+                <Link href="/admin/profile">
+                  <User className="w-4 h-4 mr-2" />
+                  Edit Profile
+                </Link>
+              </Button>
+              <Button variant="outline" asChild className="flex-1 sm:flex-none bg-transparent">
+                <Link href="/admin/ai-assistant">
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  AI Assistant
+                </Link>
+              </Button>
+            </div>
           </div>
 
           {projects.length === 0 ? (
             <div className="text-center py-12 border-2 border-dashed border-border rounded-lg">
               <p className="text-muted-foreground mb-4">No projects yet. Create your first one!</p>
-              <Button onClick={() => setIsAddDialogOpen(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Project
+              <Button asChild>
+                <Link href="/admin/new">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Project
+                </Link>
               </Button>
             </div>
           ) : (
@@ -185,7 +153,7 @@ export default function AdminPage() {
                 <AdminProjectCard
                   key={project.id}
                   project={project}
-                  onEdit={() => setEditingProject(project)}
+                  onEdit={() => router.push(`/admin/edit/${project.id}`)}
                   onDelete={() => setDeletingProject(project)}
                 />
               ))}
@@ -193,37 +161,6 @@ export default function AdminPage() {
           )}
         </div>
       </main>
-
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[calc(100vw-2rem)] sm:w-full">
-          <DialogHeader>
-            <DialogTitle>Add New Project</DialogTitle>
-            <DialogDescription>Fill in the details of your project</DialogDescription>
-          </DialogHeader>
-          <ProjectForm
-            onSubmit={handleAddProject}
-            onCancel={() => setIsAddDialogOpen(false)}
-            submitLabel="Create Project"
-          />
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={!!editingProject} onOpenChange={(open) => !open && setEditingProject(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[calc(100vw-2rem)] sm:w-full">
-          <DialogHeader>
-            <DialogTitle>Edit Project</DialogTitle>
-            <DialogDescription>Update your project details</DialogDescription>
-          </DialogHeader>
-          {editingProject && (
-            <ProjectForm
-              initialData={editingProject}
-              onSubmit={handleUpdateProject}
-              onCancel={() => setEditingProject(null)}
-              submitLabel="Update Project"
-            />
-          )}
-        </DialogContent>
-      </Dialog>
 
       <AlertDialog open={!!deletingProject} onOpenChange={(open) => !open && setDeletingProject(null)}>
         <AlertDialogContent>

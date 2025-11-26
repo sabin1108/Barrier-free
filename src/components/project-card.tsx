@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Github, ExternalLink, Star } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import ReactMarkdown from "react-markdown"
 
 interface ProjectCardProps {
   project: Project
@@ -48,9 +49,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
           {project.title}
         </h3>
 
-        <p className="text-muted-foreground text-sm leading-relaxed mb-6 line-clamp-2 text-pretty">
-          {project.description}
-        </p>
+        <div className="text-muted-foreground text-sm leading-relaxed mb-6 line-clamp-3 prose prose-invert prose-sm max-w-none">
+          <ReactMarkdown>{project.description}</ReactMarkdown>
+        </div>
 
         <div className="flex items-center gap-3 mt-auto">
           {project.liveUrl && (
