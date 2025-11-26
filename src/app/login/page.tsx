@@ -25,6 +25,7 @@ export default function LoginPage() {
 
     try {
       const result = await signIn(email, password)
+
       if (result.success) {
         router.push("/admin")
         router.refresh()

@@ -34,7 +34,7 @@ export async function signUp(email: string, password: string, name: string) {
     const cookieStore = await cookies()
     cookieStore.set("user_session", JSON.stringify({ userId, email, name }), {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: false, // process.env.NODE_ENV === "production", // Disabled for non-HTTPS deployment
       sameSite: "lax",
       maxAge: 60 * 60 * 12, // 12 hours
     })
@@ -77,7 +77,7 @@ export async function signIn(email: string, password: string) {
       }),
       {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: false, // process.env.NODE_ENV === "production", // Disabled for non-HTTPS deployment
         sameSite: "lax",
         maxAge: 60 * 60 * 12, // 12 hours
       },
