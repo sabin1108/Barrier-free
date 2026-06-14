@@ -10,5 +10,5 @@
 
 ## Blocked by
 
-- [issue-4](file:///E:/project/patent/Barrier-free/.issues/4_sse_streaming.md)
-- [issue-5](file:///E:/project/patent/Barrier-free/.issues/5_threejs_fluid_background.md)
+- #13
+- #14

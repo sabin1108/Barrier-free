@@ -9,4 +9,4 @@
 
 ## Blocked by
 
-- [issue-2](file:///E:/project/patent/Barrier-free/.issues/2_tech_stack_verification_logic.md)
+- #16

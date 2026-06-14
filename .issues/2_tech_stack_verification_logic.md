@@ -10,4 +10,4 @@
 
 ## Blocked by
 
-- [issue-1](file:///E:/project/patent/Barrier-free/.issues/1_tech_stack_schema.md)
+- #11
