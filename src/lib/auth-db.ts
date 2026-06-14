@@ -2,6 +2,34 @@
 
 import { sql } from "./db"
 import { cookies } from "next/headers"
+import { pbkdf2Sync, randomBytes, timingSafeEqual } from "crypto"
+
+const PASSWORD_HASH_PREFIX = "pbkdf2"
+const PASSWORD_ITERATIONS = 210000
+const PASSWORD_KEY_LENGTH = 32
+const PASSWORD_DIGEST = "sha256"
+
+function hashPassword(password: string) {
+  const salt = randomBytes(16).toString("base64url")
+  const hash = pbkdf2Sync(password, salt, PASSWORD_ITERATIONS, PASSWORD_KEY_LENGTH, PASSWORD_DIGEST).toString("base64url")
+  return `${PASSWORD_HASH_PREFIX}$${PASSWORD_ITERATIONS}$${salt}$${hash}`
+}
+
+function verifyPassword(password: string, stored: string | null | undefined) {
+  if (!stored) return false
+
+  const [prefix, iterationsText, salt, hash] = stored.split("$")
+  if (prefix !== PASSWORD_HASH_PREFIX || !iterationsText || !salt || !hash) {
+    return stored === password
+  }
+
+  const iterations = Number(iterationsText)
+  if (!Number.isInteger(iterations) || iterations <= 0) return false
+
+  const expected = Buffer.from(hash, "base64url")
+  const actual = pbkdf2Sync(password, salt, iterations, expected.length, PASSWORD_DIGEST)
+  return expected.length === actual.length && timingSafeEqual(expected, actual)
+}
 
 export async function signUp(email: string, password: string, name: string) {
   try {
@@ -14,8 +42,8 @@ export async function signUp(email: string, password: string, name: string) {
       return { success: false, error: "User already exists" }
     }
 
-    // Create user (in production, hash the password!)
     const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const passwordHash = hashPassword(password)
 
     await sql`
       INSERT INTO users(id, email, name, raw_json, created_at, updated_at, password)
@@ -23,10 +51,10 @@ export async function signUp(email: string, password: string, name: string) {
         ${userId},
         ${email},
         ${name},
-        ${JSON.stringify({ password })}::jsonb,
+        ${JSON.stringify({})}::jsonb,
         NOW(),
         NOW(),
-        ${password}
+        ${passwordHash}
       )
     `
 
@@ -49,7 +77,7 @@ export async function signUp(email: string, password: string, name: string) {
 export async function signIn(email: string, password: string) {
   try {
     const users = await sql`
-      SELECT id, email, name, raw_json
+      SELECT id, email, name, raw_json, password
       FROM users
       WHERE email = ${email} AND deleted_at IS NULL
     `
@@ -59,11 +87,18 @@ export async function signIn(email: string, password: string) {
     }
 
     const user = users[0]
-    const storedPassword = (user.raw_json as any)?.password
+    const storedPassword = user.password ?? (user.raw_json as any)?.password
 
-    // In production, use proper password hashing!
-    if (storedPassword !== password) {
+    if (!verifyPassword(password, storedPassword)) {
       return { success: false, error: "Invalid credentials" }
+    }
+
+    if (storedPassword === password) {
+      await sql`
+        UPDATE users
+        SET password = ${hashPassword(password)}, raw_json = COALESCE(raw_json, '{}'::jsonb) - 'password', updated_at = NOW()
+        WHERE id = ${user.id}
+      `
     }
 
     // Set session cookie

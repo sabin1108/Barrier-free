@@ -1,0 +1,14 @@
+## What to build
+
+시스템 최적화 목표가 충족되는지 객관적으로 검증하기 위해, API 응답 대기 지표(TTFT)의 개선도와 브라우저 렌더링 최적화 훅 적용 전후의 렌더링 성능을 테스트하고 프레임 안정성(FPS)을 검사하는 성능 평가 자동화 스크립트 또는 측정 도구를 구현합니다.
+
+## Acceptance criteria
+
+- [ ] 비스트리밍(동기식) 방식과 스트리밍(SSE) 방식의 TTFT를 반복 측정하여 96% 이상의 속도 개선(평균 600ms 수준)이 이루어지는지 계측되어야 함
+- [ ] 3D 동적 배경화면 컴포넌트 동작 중에도 메인 스레드 점유율이 30% 이하로 유지되고 프레임 드랍 없이 초당 60 FPS 이상이 안정적으로 찍히는지 계측되어야 함
+- [ ] useCallback/useMemo 훅 동작 가드를 통해 불필요한 하위 컴포넌트 리렌더링 차단 검사가 통과되어야 함
+
+## Blocked by
+
+- [issue-4](file:///E:/project/patent/Barrier-free/.issues/4_sse_streaming.md)
+- [issue-5](file:///E:/project/patent/Barrier-free/.issues/5_threejs_fluid_background.md)
