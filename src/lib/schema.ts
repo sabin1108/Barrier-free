@@ -49,3 +49,11 @@ export const profiles = pgTable("profiles", {
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
 });
+
+export const techStacks = pgTable("tech_stacks", {
+  id: text("id").primaryKey().default(genRandomUuid),
+  name: text("name").notNull().unique(),
+  aliases: text("aliases").array().notNull().default([]),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
