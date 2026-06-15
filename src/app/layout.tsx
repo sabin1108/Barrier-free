@@ -30,6 +30,7 @@ export const metadata: Metadata = {
 
 import { ThemeProvider } from "@/components/theme-provider"
 import { FluidBackground } from "@/components/fluid-background"
+import { Toaster } from "@/components/ui/sonner"
 
 
 export default function RootLayout({
@@ -48,6 +49,7 @@ export default function RootLayout({
         >
           <FluidBackground />
           {children}
+          <Toaster />
           <Analytics />
         </ThemeProvider>
       </body>
