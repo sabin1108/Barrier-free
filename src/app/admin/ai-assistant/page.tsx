@@ -28,7 +28,7 @@ export default function AIAssistantPage() {
     setIsUrlLoading(true)
     setUrlResult("")
     try {
-      const response = await fetch("/api/ai/summarize-url", {
+      const response = await fetch("/api/summary", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: urlInput }),
@@ -36,8 +36,20 @@ export default function AIAssistantPage() {
 
       if (!response.ok) throw new Error("Failed to summarize")
 
-      const data = await response.json()
-      setUrlResult(data.description)
+      const reader = response.body?.getReader()
+      if (!reader) throw new Error("No reader found on response body")
+
+      const decoder = new TextDecoder()
+      let accumulatedText = ""
+
+      while (true) {
+        const { value, done } = await reader.read()
+        if (done) break
+        const chunk = decoder.decode(value, { stream: true })
+        accumulatedText += chunk
+        setUrlResult(accumulatedText)
+      }
+
       toast({
         title: "URL Summarized",
         description: "AI has analyzed the link successfully",

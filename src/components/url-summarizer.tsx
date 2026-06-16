@@ -28,7 +28,7 @@ export function URLSummarizer({ onSummaryGenerated }: URLSummarizerProps) {
 
     setIsLoading(true)
     try {
-      const response = await fetch("/api/ai/summarize-url", {
+      const response = await fetch("/api/summary", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url }),
@@ -36,8 +36,21 @@ export function URLSummarizer({ onSummaryGenerated }: URLSummarizerProps) {
 
       if (!response.ok) throw new Error("Failed to summarize URL")
 
-      const data = await response.json()
-      onSummaryGenerated(data.summary)
+      const reader = response.body?.getReader()
+      if (!reader) throw new Error("No reader found on response body")
+
+      const decoder = new TextDecoder()
+      let accumulatedText = ""
+      onSummaryGenerated("") // Clear previous summary
+
+      while (true) {
+        const { value, done } = await reader.read()
+        if (done) break
+        const chunk = decoder.decode(value, { stream: true })
+        accumulatedText += chunk
+        onSummaryGenerated(accumulatedText)
+      }
+
       setUrl("")
       toast({
         title: "URL summarized",
