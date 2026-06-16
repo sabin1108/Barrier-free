@@ -4,6 +4,7 @@ import { useState, useMemo } from "react"
 import { ProjectCard } from "@/components/project-card"
 import { PortfolioHeader } from "@/components/portfolio-header"
 import { PortfolioFilter } from "@/components/portfolio-filter"
+import { FluidBackground } from "@/components/fluid-background"
 import type { Project } from "@/lib/types"
 
 export function PortfolioContent({ projects, profile }: { projects: Project[], profile?: { headline: string, bio: string } | null }) {
@@ -30,7 +31,8 @@ export function PortfolioContent({ projects, profile }: { projects: Project[], p
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen relative text-foreground">
+      <FluidBackground />
       <PortfolioHeader />
 
       <main className="container mx-auto px-4 py-24 sm:py-32">

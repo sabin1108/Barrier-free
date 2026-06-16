@@ -2,6 +2,7 @@ import type React from "react"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { FluidBackground } from "@/components/fluid-background"
 
 interface AuthLayoutProps {
   children: React.ReactNode
@@ -11,8 +12,9 @@ interface AuthLayoutProps {
 
 export function AuthLayout({ children, title, description }: AuthLayoutProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4">
-      <div className="absolute top-4 left-4">
+    <div className="min-h-screen flex items-center justify-center p-4 relative">
+      <FluidBackground />
+      <div className="absolute top-4 left-4 z-10">
         <Button variant="ghost" size="sm" asChild>
           <Link href="/">
             <ArrowLeft className="w-4 h-4 mr-2" />
