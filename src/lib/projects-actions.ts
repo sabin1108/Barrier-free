@@ -4,6 +4,7 @@ import { sql } from "./db"
 import type { DBProject, Project } from "./types"
 import { getCurrentUser } from "./auth-db"
 import { revalidatePath } from "next/cache"
+import { verifyTechStacks } from "./tech-stack-verifier"
 
 export async function createProject(data: Omit<DBProject, "id" | "created_at" | "updated_at" | "user_id">) {
   try {
@@ -13,6 +14,8 @@ export async function createProject(data: Omit<DBProject, "id" | "created_at" | 
     }
 
     const projectId = `proj_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+
+    const validTags = await verifyTechStacks(data.tags || [])
 
     await sql`
       INSERT INTO projects (
@@ -24,7 +27,7 @@ export async function createProject(data: Omit<DBProject, "id" | "created_at" | 
         ${data.image_url || null},
         ${data.github_url || null},
         ${data.live_url || null},
-        ${data.tags},
+        ${validTags},
         ${data.featured},
         ${user.userId}
       )
@@ -72,7 +75,10 @@ export async function updateProject(
     if (data.image_url !== undefined) addUpdate("image_url", data.image_url || null)
     if (data.github_url !== undefined) addUpdate("github_url", data.github_url || null)
     if (data.live_url !== undefined) addUpdate("live_url", data.live_url || null)
-    if (data.tags !== undefined) addUpdate("tags", data.tags)
+    if (data.tags !== undefined) {
+      const validTags = await verifyTechStacks(data.tags || [])
+      addUpdate("tags", validTags)
+    }
     if (data.featured !== undefined) addUpdate("featured", data.featured)
 
     if (updates.length > 0) {
