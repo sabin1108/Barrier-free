@@ -1,6 +1,6 @@
 import { streamText } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
-import { JSDOM } from "jsdom";
+import { parseHtmlContent } from "@/lib/html-parser";
 
 const openai = createOpenAI({
   apiKey: process.env.PUBLIC_API_KEY,
@@ -16,11 +16,7 @@ export async function POST(request: Request) {
 
     const response = await fetch(url);
     const html = await response.text();
-    const dom = new JSDOM(html);
-    const mainContent = (dom.window.document.body.textContent || "")
-      .replace(/\s+/g, " ")
-      .trim()
-      .slice(0, 10000); // Limit content length
+    const mainContent = parseHtmlContent(html);
 
     const result = streamText({
       model: openai("gpt-4o-mini"),
