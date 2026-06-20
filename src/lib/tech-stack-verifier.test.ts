@@ -36,4 +36,16 @@ describe("verifyTechStacks", () => {
     
     expect(result).toEqual(["JavaScript"]);
   });
+  it("should handle empty array safely", async () => {
+    const result = await verifyTechStacks([]);
+    expect(result).toEqual([]);
+  });
+
+  it("should remove duplicates", async () => {
+    (sql as any).mockResolvedValue([
+      { name: "React", aliases: ["reactjs"] }
+    ]);
+    const result = await verifyTechStacks(["React", "reactjs", "react"]);
+    expect(result).toEqual(["React"]);
+  });
 });
